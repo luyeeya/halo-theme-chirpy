@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html
+  th:replace="~{modules/layout :: html (title =${post.spec.title},
+  content = ~{::content}, layout = 'post', breadcrumb = ~{::breadcrumb})}"
+  xmlns:th="https://www.thymeleaf.org"
+>
+<th:block th:fragment="breadcrumb">
+    <span>
+      <a href="/">[[#{breadcrumb.home}]]</a>
+    </span>
+  <span>[[${post.spec.title}]]</span>
+</th:block>
+
+<th:block th:fragment="content">
+  <header>
+    <h1 data-toc-skip>[[${post.spec.title}]]</h1>
+  </header>
+
+  <div class="content">
+    <th:block th:utext="${post.content.content}"/>
+  </div>
+
+  <div class="post-tail-wrapper text-muted">
+    <!-- categories -->
+    <div class="post-meta mb-3" th:if="${#lists.size(post.categories) ge 1}">
+      <i class="far fa-folder-open fa-fw me-1"></i>
+      <th:block th:each="category, index: ${post.categories}">
+        <a
+          th:href="@{'/categories/'+${category.spec.slug}}"
+          th:if="${index.count lt index.size}"
+        >
+          [[${category.spec.displayName + ", "}]]
+        </a>
+        <a
+          th:href="@{'/categories/'+${category.spec.slug}}"
+          th:if="${index.count eq index.size}"
+        >
+          [[${category.spec.displayName}]]
+        </a>
+      </th:block>
+    </div>
+
+    <!-- tags -->
+    <div class="post-tags" th:if="${#lists.size(post.tags) ge 1}">
+      <i class="fa fa-tags fa-fw me-1"></i>
+      <a
+        class="post-tag no-text-decoration"
+        th:each="tag, index : ${post.tags}"
+        th:href="@{'/tags/'+${tag.spec.slug}}"
+      >
+        [[${tag.spec.displayName}]]
+      </a>
+    </div>
+
+    <!-- license && sharing -->
+    <div
+      class="post-tail-bottom d-flex justify-content-between align-items-center mt-3 pt-5 pb-2"
+    >
+      <div class="license-wrapper">
+        [[#{post.license}]]:&nbsp;
+        <a id="myLink" th:href="${theme.config.basics.copyrightAgreementUrl}">
+          [[${theme.config.basics.copyrightAgreement}]]
+        </a>
+      </div>
+      <th:block
+        th:replace="~{modules/post/postShaing :: postShaing} "
+      ></th:block>
+    </div>
+    <!-- .post-tail-bottom -->
+  </div>
+    <!-- further reading -->
+    <!-- <div class="row">
+      <div class="col-12 px-md-4">
+        <th:block
+          th:replace="~{modules/post/relatedPosts :: relatedPosts}"
+        ></th:block>
+      </div>
+    </div> -->
+
+    <!-- comments -->
+    <div id="comment">
+      <halo:comment
+        group="content.halo.run"
+        kind="Post"
+        th:attr="name=${post.metadata.name}"
+      />
+    </div>
+  <!-- div.post-tail-wrapper -->
+</th:block>
+</html>
